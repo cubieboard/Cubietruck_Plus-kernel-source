@@ -1,0 +1,41 @@
+diff --git a/sound/soc/soc-dmaengine-pcm.c b/sound/soc/soc-dmaengine-pcm.c
+index 01edea5..c944c46 100755
+--- a/sound/soc/soc-dmaengine-pcm.c
++++ b/sound/soc/soc-dmaengine-pcm.c
+@@ -136,7 +136,6 @@ static void dmaengine_pcm_dma_complete(void *arg)
+ 		return;
+ 	}
+ 	prtd = substream_to_prtd(substream);
+-
+ 	prtd->pos += snd_pcm_lib_period_bytes(substream);
+ 	if (prtd->pos >= snd_pcm_lib_buffer_bytes(substream))
+ 		prtd->pos = 0;
+@@ -164,7 +163,7 @@ static int dmaengine_pcm_prepare_and_submit(struct snd_pcm_substream *substream)
+ 			desc = dmaengine_prep_dma_cyclic(chan,
+ 				substream->runtime->dma_addr,
+ 				snd_pcm_lib_buffer_bytes(substream),
+-				snd_pcm_lib_buffer_bytes(substream), direction, flags);
++				snd_pcm_lib_period_bytes(substream), direction, flags);
+ 		} else {
+ 			desc = dmaengine_prep_dma_cyclic(chan,
+ 				substream->runtime->dma_addr,
+diff --git a/sound/soc/sunxi/daudio0/sunxi-daudiodma0.c b/sound/soc/sunxi/daudio0/sunxi-daudiodma0.c
+index bd5f1a1..e413093 100755
+--- a/sound/soc/sunxi/daudio0/sunxi-daudiodma0.c
++++ b/sound/soc/sunxi/daudio0/sunxi-daudiodma0.c
+@@ -212,15 +212,6 @@ static int sunxi_pcm_hw_params(struct snd_pcm_substream *substream,
+ 		return ret;
+ 	}
+ #endif
+-#ifdef CONFIG_ARCH_SUN9IW1
+-#ifndef AR200_AUDIO
+-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		substream->dma_buffer.addr = AUDIO_SRAM_BASE_PALY;
+-		substream->dma_buffer.area = 0xf8117000;
+-		memset(0xf8117000, 0, 0x3c00);
+-	}
+-#endif
+-#endif
+ 	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
+ 	return 0;
+ }
