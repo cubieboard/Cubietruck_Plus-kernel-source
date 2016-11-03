@@ -140,9 +140,15 @@ static int axp_battery_get_property(struct power_supply *psy,
 	 * by sunny at 2012-12-23 11:06:15.
 	 */
 		axp_charger_update_state(charger);
+		/*
 		val->intval = charger->bat_current_direction;
-		if (charger->bat_temp > 50 || -5 < charger->bat_temp)
+		if (charger->bat_temp > 50 || -5 > charger->bat_temp)
 			val->intval = 0;
+		*/
+		/* fixed battery online.
+		 * by alodos at 2016-11-04 14:00:05.
+		 */
+		val->intval = (!charger->is_on)&&(charger->bat_det) && (! charger->ext_valid);
 		break;
 	}
 	case POWER_SUPPLY_PROP_PRESENT:
